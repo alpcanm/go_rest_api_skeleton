@@ -12,3 +12,10 @@ type Product struct {
 	Tax       string             `json:"tag,omitempty" validate:"required"`
 	DrawUrl   int                `json:"draw_url,omitempty" validate:"required"`
 }
+
+type ProductFilterModel struct {
+	ProductId string             `json:"product_id"`
+	CreatedAt primitive.DateTime `json:"created_at"`
+	Tag       string             `json:"tag"`
+	IsExpired string             `json:"is_expired"`
+}

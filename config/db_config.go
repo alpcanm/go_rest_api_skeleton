@@ -1,4 +1,4 @@
-package config_
+package config
 
 import (
 	"context"
@@ -32,6 +32,6 @@ func connectDB() *mongo.Client {
 var DB *mongo.Client = connectDB()
 
 func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
-	collection := client.Database("golangAPI").Collection(collectionName)
+	collection := client.Database("mesela-service").Collection(collectionName)
 	return collection
 }
