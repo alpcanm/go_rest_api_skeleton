@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	config "go_rest_api_skeleton/config"
 	"go_rest_api_skeleton/models"
 	"net/http"
@@ -26,17 +27,23 @@ func InsertAUser(c echo.Context) error {
 	// request'in içindeki verileri alır ve user model'e yerleştirir.
 	if err := c.Bind(&user); err != nil {
 		//bir hata varsa döner
+
+		fmt.Println(err.Error())
 		return c.JSON(http.StatusBadRequest, models.Response{Body: &echo.Map{"error": err.Error()}})
 	}
 	// requestin içindeki veriyi validate eder.
 	if err := validate.Struct(user); err != nil {
+		fmt.Println(err.Error())
+
 		return c.JSON(http.StatusBadRequest, models.Response{Body: &echo.Map{"error": err.Error()}})
 	}
 	//user in uid sine mongodb _uid yerleştirid
-	user.Uid = primitive.NewObjectID()
+	user.Id = primitive.NewObjectID()
 	//veritabanına ekler.
 	result, err := collection.InsertOne(ctx, user)
 	if err != nil {
+		fmt.Println(err.Error())
+
 		return c.JSON(http.StatusBadRequest, models.Response{Body: &echo.Map{"error": err.Error()}})
 	}
 	//sonuç döner
@@ -44,6 +51,7 @@ func InsertAUser(c echo.Context) error {
 }
 
 func SelectAUser(c echo.Context) error {
+	fmt.Println("Request geldi")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var result bson.M

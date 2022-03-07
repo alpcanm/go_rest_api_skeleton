@@ -7,6 +7,7 @@ import (
 )
 
 func UserRoute(e *echo.Echo) {
-	e.POST("/user", controllers.InsertAUser)
-	e.GET("/user/:uid", controllers.SelectAUser)
+
+	e.POST("/users", controllers.InsertAUser)
+	e.GET("/users/:uid", controllers.SelectAUser)
 }

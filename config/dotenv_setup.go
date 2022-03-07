@@ -12,7 +12,14 @@ func mongoURI() string {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	mong := os.Getenv("MONGOURI")
 
-	return mong
+	return os.Getenv("MONGOURI")
+}
+func ApiKey() string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	return os.Getenv("API_KEY")
 }
