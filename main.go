@@ -1,6 +1,7 @@
 package main
 
 import (
+	"go_rest_api_skeleton/config"
 	"go_rest_api_skeleton/midlewares"
 	"go_rest_api_skeleton/routes"
 
@@ -8,12 +9,9 @@ import (
 )
 
 func main() {
-
 	e := echo.New()
-	midlewares.MidlewaresInitial(e)
-
+	midlewares.MainMiddlewares(e)
 	routes.ApiKeyRoute(e)
 	routes.UserRoute(e)
-
-	e.Logger.Fatal(e.Start("127.0.0.1:3000"))
+	e.Logger.Fatal(e.Start(config.LocalHost()))
 }

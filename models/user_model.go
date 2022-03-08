@@ -14,6 +14,3 @@ type UserModel struct {
 	Tickets      int                `json:"tickets,omitempty"`
 	CreatedAt    primitive.DateTime `json:"created_at,omitempty"`
 }
-type UserFilterModel struct {
-	Uid string `json:"uid"`
-}

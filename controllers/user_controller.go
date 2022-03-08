@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -51,19 +52,22 @@ func InsertAUser(c echo.Context) error {
 }
 
 func SelectAUser(c echo.Context) error {
+
 	fmt.Println("Request geldi")
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var result bson.M
-	// parametreyi uid değişkenine atar
-	uid := c.Param("uid")
+	// doğrulanan tokenın içerisindeki uid parametresini alır string e dönüştürür
+	uid := fmt.Sprintf("%v", c.Get("user").(*jwt.Token).Claims.(jwt.MapClaims)["uid"])
 	// filtreye göre istenilen veriyi getirir ve result değişkenine atar.
-	err := collection.FindOne(ctx, models.UserFilterModel{Uid: uid}).Decode(&result)
+	err := collection.FindOne(ctx, bson.D{{"uid", uid}}).Decode(&result)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return c.JSON(http.StatusBadRequest, models.Response{Body: &echo.Map{"error": err.Error()}})
 		}
 		panic(err)
 	}
-	return c.JSON(http.StatusCreated, models.Response{Body: &echo.Map{"data": result}})
+
+	return c.JSON(http.StatusOK, models.Response{Body: &echo.Map{"data": result}})
 }
