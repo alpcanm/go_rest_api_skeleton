@@ -1,4 +1,4 @@
-package controllers
+package usercont
 
 import (
 	"context"
@@ -57,11 +57,11 @@ func SelectAUser(c echo.Context) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	var result bson.M
+	var result models.UserModel
 	// doğrulanan tokenın içerisindeki uid parametresini alır string e dönüştürür
 	uid := fmt.Sprintf("%v", c.Get("user").(*jwt.Token).Claims.(jwt.MapClaims)["uid"])
 	// filtreye göre istenilen veriyi getirir ve result değişkenine atar.
-	err := collection.FindOne(ctx, bson.D{{"uid", uid}}).Decode(&result)
+	err := collection.FindOne(ctx, bson.D{{Key: "uid", Value: uid}}).Decode(&result)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return c.JSON(http.StatusBadRequest, models.Response{Body: &echo.Map{"error": err.Error()}})

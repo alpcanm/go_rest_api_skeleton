@@ -13,5 +13,6 @@ func main() {
 	midlewares.MainMiddlewares(e)
 	routes.ApiKeyRoute(e)
 	routes.UserRoute(e)
+	routes.ProductRoutes(e)
 	e.Logger.Fatal(e.Start(config.LocalHost()))
 }
