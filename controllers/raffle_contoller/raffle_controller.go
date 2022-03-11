@@ -1,4 +1,4 @@
-package prodcont
+package rafcont
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"go_rest_api_skeleton/models"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -53,11 +54,13 @@ func InsertARaffle(c echo.Context) error {
 func GetRaffles(c echo.Context) error {
 	// TODO: Düzeltilmesi gereken yer
 	var isTagThere bool
-	if c.QueryParam("tag1") != "" {
+	if c.QueryParam("tags") != "" {
+
 		isTagThere = true
 	}
 	gtFitlers := gtFilters(c.QueryParam("gt"))
-	tagFilters := tagFilters(c.QueryParam("tag1"), c.QueryParam("tag2"))
+
+	tagFilters := tagFilters(c.QueryParam("tags"))
 
 	sortValue := bson.D{{Key: date, Value: 1}}
 	opts := options.Find().SetSort(sortValue).SetLimit(3)
@@ -78,10 +81,9 @@ func GetRaffles(c echo.Context) error {
 }
 func filterCheck(gtFilter primitive.E, tagFilters primitive.E, isTagThere bool) bson.D {
 	if isTagThere {
-		fmt.Println("filtreli")
+
 		return bson.D{gtFilter, tagFilters}
 	}
-	fmt.Println("filtresiz")
 
 	return bson.D{gtFilter}
 }
@@ -96,16 +98,16 @@ func gtFilters(ltParam string) primitive.E {
 
 }
 
-func tagFilters(tag1, tag2 string) primitive.E {
+func tagFilters(primary string) primitive.E {
+	secondary := strings.ReplaceAll(primary, "]", "")
+	third := strings.ReplaceAll(secondary, "[", "")
+	tagList := strings.Split(third, ",")
 
-	equalTo1 := bson.D{{Key: eq, Value: tag1}}
-	equalTo2 := bson.D{{Key: eq, Value: tag2}}
-	tagQuery1 := bson.D{{Key: tag, Value: equalTo1}}
-	tagQuery2 := bson.D{{Key: tag, Value: equalTo2}}
-	return primitive.E{Key: "$or", Value: [2]bson.D{tagQuery1, tagQuery2}}
-}
+	var equalList []bson.D
+	for _, b := range tagList {
 
-func DenemeProd(c echo.Context) error {
-	eq := collection.Database().CreateCollection(context.TODO(), "adasdas")
-	return c.JSON(200, models.Response{Body: &echo.Map{"data": eq}})
+		equalList = append(equalList, bson.D{{Key: tag, Value: bson.D{{Key: eq, Value: b}}}})
+	}
+
+	return primitive.E{Key: "$or", Value: equalList}
 }
