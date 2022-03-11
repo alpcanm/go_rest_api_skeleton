@@ -17,30 +17,29 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var collection *mongo.Collection = config.GetCollection(config.DB, "products")
+var collection *mongo.Collection = config.GetCollection(config.DB, "raffles")
 var validate = validator.New()
-var draw_date, tag, eq, gt string = "draw_date", "tag", "$eq", "$gt"
+var date, tag, eq, gt string = "date", "tag", "$eq", "$gt"
 
-func InsertAProduct(c echo.Context) error {
+func InsertARaffle(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	var product models.ProductModel
+	var raffle models.RaffleModel
 
-	if err := c.Bind(&product); err != nil {
+	if err := c.Bind(&raffle); err != nil {
 		//bir hata varsa döner
 
 		fmt.Println(err.Error())
 		return c.JSON(http.StatusBadRequest, models.Response{Message: err.Error()})
 	}
-	if err := validate.Struct(product); err != nil {
+	if err := validate.Struct(raffle); err != nil {
 		fmt.Println(err.Error())
 
 		return c.JSON(http.StatusBadRequest, models.Response{Message: err.Error()})
 	}
-	//user in uid sine mongodb _uid yerleştirid
-	product.ProductId = primitive.NewObjectID()
-	product.IsExpired = false
-	result, err := collection.InsertOne(ctx, product)
+
+	raffle.IsExpired = false
+	result, err := collection.InsertOne(ctx, raffle)
 	if err != nil {
 		fmt.Println(err.Error())
 
@@ -51,7 +50,7 @@ func InsertAProduct(c echo.Context) error {
 
 }
 
-func GetProducts(c echo.Context) error {
+func GetRaffles(c echo.Context) error {
 	// TODO: Düzeltilmesi gereken yer
 	var isTagThere bool
 	if c.QueryParam("tag1") != "" {
@@ -60,8 +59,8 @@ func GetProducts(c echo.Context) error {
 	gtFitlers := gtFilters(c.QueryParam("gt"))
 	tagFilters := tagFilters(c.QueryParam("tag1"), c.QueryParam("tag2"))
 
-	sortValue := bson.D{{Key: draw_date, Value: 1}}
-	opts := options.Find().SetSort(sortValue).SetLimit(10)
+	sortValue := bson.D{{Key: date, Value: 1}}
+	opts := options.Find().SetSort(sortValue).SetLimit(3)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -70,7 +69,7 @@ func GetProducts(c echo.Context) error {
 	if err != nil {
 		panic(err)
 	}
-	var results []*models.ProductModel
+	var results []*models.RaffleModel
 	if err := resultList.All(ctx, &results); err != nil {
 		panic(err)
 	}
@@ -79,19 +78,21 @@ func GetProducts(c echo.Context) error {
 }
 func filterCheck(gtFilter primitive.E, tagFilters primitive.E, isTagThere bool) bson.D {
 	if isTagThere {
-
+		fmt.Println("filtreli")
 		return bson.D{gtFilter, tagFilters}
 	}
+	fmt.Println("filtresiz")
+
 	return bson.D{gtFilter}
 }
 
 func gtFilters(ltParam string) primitive.E {
-	querDrawDate, err := strconv.Atoi(ltParam)
+	queryRaffleDate, err := strconv.Atoi(ltParam)
 	if err != nil {
 		panic(err)
 	}
-	lowerThan := bson.D{{Key: gt, Value: querDrawDate}}
-	return primitive.E{Key: draw_date, Value: lowerThan}
+	lowerThan := bson.D{{Key: gt, Value: queryRaffleDate}}
+	return primitive.E{Key: date, Value: lowerThan}
 
 }
 
@@ -102,4 +103,9 @@ func tagFilters(tag1, tag2 string) primitive.E {
 	tagQuery1 := bson.D{{Key: tag, Value: equalTo1}}
 	tagQuery2 := bson.D{{Key: tag, Value: equalTo2}}
 	return primitive.E{Key: "$or", Value: [2]bson.D{tagQuery1, tagQuery2}}
+}
+
+func DenemeProd(c echo.Context) error {
+	eq := collection.Database().CreateCollection(context.TODO(), "adasdas")
+	return c.JSON(200, models.Response{Body: &echo.Map{"data": eq}})
 }
