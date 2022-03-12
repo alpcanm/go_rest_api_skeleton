@@ -99,9 +99,7 @@ func gtFilters(ltParam string) primitive.E {
 }
 
 func tagFilters(primary string) primitive.E {
-	secondary := strings.ReplaceAll(primary, "]", "")
-	third := strings.ReplaceAll(secondary, "[", "")
-	tagList := strings.Split(third, ",")
+	tagList := strings.Split(primary, ",")
 
 	var equalList []bson.D
 	for _, b := range tagList {
