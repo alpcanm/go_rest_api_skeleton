@@ -54,7 +54,7 @@ func RaffleAddToListSubscribe(c echo.Context) error {
 		}
 
 		filter := bson.D{{Key: "uid", Value: c.QueryParam("uid")}}
-		update := bson.D{{Key: "$push", Value: bson.D{{Key: "raffle_list", Value: miniRaffle}}}}
+		update := bson.D{{Key: "$push", Value: bson.D{{Key: "subscribed_raffles", Value: miniRaffle}}}}
 		_, err := usersCollection.UpdateOne(ctx, filter, update)
 		if err != nil {
 

@@ -18,6 +18,8 @@ var date, tag, eq, gt string = "date", "tag", "$eq", "$gt"
 
 func GetRaffles(c echo.Context) error {
 	// TODO: Düzeltilmesi gereken yer
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	var isTagThere bool
 	if c.QueryParam("tags") != "" {
 
@@ -29,9 +31,6 @@ func GetRaffles(c echo.Context) error {
 
 	sortValue := bson.D{{Key: date, Value: 1}}
 	opts := options.Find().SetSort(sortValue).SetLimit(3)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 
 	fetchedData, err := rafflesCollection.Find(ctx, filterCheck(gtFitlers, tagFilters, isTagThere), opts)
 	if err != nil {
@@ -63,8 +62,8 @@ func gtFilters(ltParam string) primitive.E {
 	if err != nil {
 		panic(err)
 	}
-	lowerThan := bson.D{{Key: gt, Value: queryRaffleDate}}
-	return primitive.E{Key: date, Value: lowerThan}
+	greaterThan := bson.D{{Key: gt, Value: queryRaffleDate}}
+	return primitive.E{Key: date, Value: greaterThan}
 
 }
 
