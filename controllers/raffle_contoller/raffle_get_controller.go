@@ -2,54 +2,19 @@ package rafcont
 
 import (
 	"context"
-	"fmt"
-	"go_rest_api_skeleton/config"
 	"go_rest_api_skeleton/models"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var collection *mongo.Collection = config.GetCollection(config.DB, "raffles")
-var validate = validator.New()
 var date, tag, eq, gt string = "date", "tag", "$eq", "$gt"
-
-func InsertARaffle(c echo.Context) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	var raffle models.RaffleModel
-
-	if err := c.Bind(&raffle); err != nil {
-		//bir hata varsa döner
-
-		fmt.Println(err.Error())
-		return c.JSON(http.StatusBadRequest, models.Response{Message: err.Error()})
-	}
-	if err := validate.Struct(raffle); err != nil {
-		fmt.Println(err.Error())
-
-		return c.JSON(http.StatusBadRequest, models.Response{Message: err.Error()})
-	}
-
-	raffle.IsExpired = false
-	result, err := collection.InsertOne(ctx, raffle)
-	if err != nil {
-		fmt.Println(err.Error())
-
-		return c.JSON(http.StatusBadRequest, models.Response{Message: err.Error()})
-	}
-	//sonuç döner
-	return c.JSON(http.StatusCreated, models.Response{Body: &echo.Map{"data": result}})
-
-}
 
 func GetRaffles(c echo.Context) error {
 	// TODO: Düzeltilmesi gereken yer
@@ -68,13 +33,18 @@ func GetRaffles(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	resultList, err := collection.Find(ctx, filterCheck(gtFitlers, tagFilters, isTagThere), opts)
+	fetchedData, err := rafflesCollection.Find(ctx, filterCheck(gtFitlers, tagFilters, isTagThere), opts)
 	if err != nil {
 		panic(err)
 	}
-	var results []*models.RaffleModel
-	if err := resultList.All(ctx, &results); err != nil {
-		panic(err)
+	var results []models.RaffleModel
+
+	for fetchedData.Next(ctx) {
+		var singleRaffle models.RaffleModel
+		if err = fetchedData.Decode(&singleRaffle); err != nil {
+			return c.JSON(http.StatusInternalServerError, models.Response{Message: "error", Body: &echo.Map{"data": err.Error()}})
+		}
+		results = append(results, singleRaffle)
 	}
 
 	return c.JSON(http.StatusOK, models.Response{Body: &echo.Map{"data": results}})

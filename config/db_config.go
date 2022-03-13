@@ -24,7 +24,7 @@ func connectDB() *mongo.Client {
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
 		panic(err)
 	}
-	fmt.Println("Successfully connected and pinged.")
+	fmt.Println("Bağlantı başarılı")
 
 	return client
 }

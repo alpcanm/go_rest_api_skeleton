@@ -9,5 +9,6 @@ import (
 func RaffleRoutes(e *echo.Echo) {
 	e.POST("/raffles", rafcont.InsertARaffle)
 	e.GET("/raffles", rafcont.GetRaffles)
+	e.POST("/raffles-addto", rafcont.RaffleAddToListSubscribe)
 
 }
