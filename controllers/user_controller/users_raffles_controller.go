@@ -29,6 +29,7 @@ func SelectUsersRaffles(c echo.Context) error {
 	err := collection.FindOne(ctx, bson.D{{Key: "uid", Value: uid}}).Decode(&result)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
+
 			return c.JSON(http.StatusBadRequest, models.Response{Body: &echo.Map{"error": err.Error()}})
 		}
 		panic(err)

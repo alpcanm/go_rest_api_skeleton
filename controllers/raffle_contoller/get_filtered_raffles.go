@@ -17,7 +17,7 @@ func GetFilteredRaffles(greaterThan int, wantedRaffles []primitive.ObjectID) []m
 	defer cancel()
 	var results []models.RaffleModel
 	sortValue := bson.D{{Key: date, Value: 1}}
-	opts := options.Find().SetSort(sortValue).SetLimit(3)
+	opts := options.Find().SetSort(sortValue)
 
 	fetchedData, err := rafflesCollection.Find(ctx, getFiltereds(greaterThan, wantedRaffles), opts)
 	if err != nil {

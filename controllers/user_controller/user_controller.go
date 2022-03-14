@@ -40,6 +40,8 @@ func InsertAUser(c echo.Context) error {
 	}
 	//user in uid sine mongodb _uid yerleştirid
 	user.Id = primitive.NewObjectID()
+	user.SubscribedRaffles = []models.MiniRaffleModel{}
+	user.CreatedAt = time.Now().UnixNano() / int64(time.Millisecond)
 	//veritabanına ekler.
 	result, err := collection.InsertOne(ctx, user)
 	if err != nil {
