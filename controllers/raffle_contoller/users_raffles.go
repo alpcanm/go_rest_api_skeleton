@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func GetFilteredRaffles(greaterThan int, wantedRaffles []primitive.ObjectID) []models.RaffleModel {
+func GetUsersRaffles(greaterThan int, wantedRaffles []primitive.ObjectID) []models.RaffleModel {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var results []models.RaffleModel

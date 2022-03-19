@@ -7,8 +7,11 @@ import (
 )
 
 func RaffleRoutes(e *echo.Echo) {
+	e.GET("/raffle", rafcont.GetARAffle)
+	e.POST("/raffle", rafcont.SetNewRecentRaffle)
+	e.GET("/raffle-recent", rafcont.GetRecentRaffle)
 	e.POST("/raffles", rafcont.InsertARaffle)
-	e.GET("/raffles", rafcont.GetRaffles)
+	e.GET("/raffles", rafcont.GetAllRaffles)
 	e.POST("/raffles-addto", rafcont.RaffleAddToListSubscribe)
 
 }

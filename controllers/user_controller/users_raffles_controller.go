@@ -42,6 +42,6 @@ func SelectUsersRaffles(c echo.Context) error {
 
 	var usersRaffelList models.UsersRaffleList
 
-	usersRaffelList.RaffleList = rafcont.GetFilteredRaffles(gt, raffleIdList)
+	usersRaffelList.RaffleList = rafcont.GetUsersRaffles(gt, raffleIdList)
 	return c.JSON(http.StatusOK, models.Response{Body: &echo.Map{"data": usersRaffelList}})
 }

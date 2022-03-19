@@ -49,7 +49,7 @@ func RaffleAddToListSubscribe(c echo.Context) error {
 			MiniRaffleModelId: primitive.NewObjectID(),
 			RaffleId:          raffleId,
 			SubscribeId:       subscriberModel.SubscribeId,
-			SubscriberName:    subscriberModel.SubscriberName,
+			SubscriberName:    subscriberModel.RaffleNickName,
 			SubscribeDate:     subscriberModel.SubscribeDate,
 		}
 

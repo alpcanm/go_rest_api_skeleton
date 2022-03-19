@@ -11,12 +11,13 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var date, tag, eq, gt string = "date", "tag", "$eq", "$gt"
 
-func GetRaffles(c echo.Context) error {
+func GetAllRaffles(c echo.Context) error {
 	// TODO: Düzeltilmesi gereken yer
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -34,7 +35,10 @@ func GetRaffles(c echo.Context) error {
 
 	fetchedData, err := rafflesCollection.Find(ctx, filterCheck(gtFitlers, tagFilters, isTagThere), opts)
 	if err != nil {
-		panic(err)
+		if err == mongo.ErrNoDocuments {
+
+			return c.JSON(http.StatusBadRequest, models.Response{Message: err.Error()})
+		}
 	}
 	var results []models.RaffleModel
 
@@ -57,8 +61,8 @@ func filterCheck(gtFilter primitive.E, tagFilters primitive.E, isTagThere bool) 
 	return bson.D{gtFilter}
 }
 
-func gtFilters(ltParam string) primitive.E {
-	queryRaffleDate, err := strconv.Atoi(ltParam)
+func gtFilters(gtParam string) primitive.E {
+	queryRaffleDate, err := strconv.Atoi(gtParam)
 	if err != nil {
 		panic(err)
 	}
