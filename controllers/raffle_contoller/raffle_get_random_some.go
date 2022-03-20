@@ -1,3 +1,0 @@
-package rafcont
-
-func GetRandomSomeRaffles() {}

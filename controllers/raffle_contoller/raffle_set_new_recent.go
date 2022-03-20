@@ -36,11 +36,21 @@ func SetNewRecentRaffle(c echo.Context) error {
 		}
 		results = append(results, singleRaffle)
 	}
-
+	fetchedRaffle := results[0]
+	recentRaffle := models.RecentRaffleModel{
+		RaffleId:  fetchedRaffle.RaffleId,
+		Title:     fetchedRaffle.Title,
+		Comment:   fetchedRaffle.Comment,
+		Date:      fetchedRaffle.Date,
+		PhotoUrl:  fetchedRaffle.PhotoUrl,
+		IsExpired: fetchedRaffle.IsExpired,
+		Tag:       fetchedRaffle.Tag,
+		Url:       fetchedRaffle.Url,
+	}
 	filter := bson.M{"is_expired": true}
-	result, err := recentRaffleColl.ReplaceOne(ctx, filter, results[0])
+	result, err := recentRaffleColl.ReplaceOne(ctx, filter, recentRaffle)
 	if err != nil {
-		panic(err)
+		c.JSON(http.StatusBadRequest, models.Response{Body: &echo.Map{"data": err.Error()}})
 	}
 	return c.JSON(http.StatusOK, models.Response{Body: &echo.Map{"data": result}})
 }

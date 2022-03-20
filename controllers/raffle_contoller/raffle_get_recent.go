@@ -13,18 +13,22 @@ import (
 
 func GetRecentRaffle(c echo.Context) error {
 
+	return c.JSON(http.StatusOK, models.Response{Body: &echo.Map{"data": getRecentRaffle()}})
+}
+
+func getRecentRaffle() models.RecentRaffleModel {
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	var raffle models.RaffleModel
+	var raffle models.RecentRaffleModel
 
 	err := recentRaffleColl.FindOne(ctx, bson.M{"is_expired": false}).Decode(&raffle)
-
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 
-			return c.JSON(http.StatusNoContent, models.Response{Message: err.Error()})
+			panic(err)
 		}
 
 	}
-	return c.JSON(http.StatusOK, models.Response{Body: &echo.Map{"data": raffle}})
+	return raffle
 }
