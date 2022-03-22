@@ -8,7 +8,7 @@ import (
 
 func RaffleRoutes(e *echo.Echo) {
 	e.POST("/raffle-recent", rafcont.SetNewRecentRaffle)
-	e.PATCH("/raffle-recent", rafcont.RaffleRecentIsExpired)
+	e.PATCH("/raffle-recent", rafcont.RaffleRecentSetExpired)
 	e.GET("/raffle-recent", rafcont.GetRecentRaffle)
 
 	e.GET("/raffle", rafcont.GetARAffleFromRaffles)

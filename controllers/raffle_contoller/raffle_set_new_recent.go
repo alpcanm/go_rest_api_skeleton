@@ -49,6 +49,7 @@ func SetNewRecentRaffle(c echo.Context) error {
 	}
 	filter := bson.M{"is_expired": true}
 	result, err := recentRaffleColl.ReplaceOne(ctx, filter, recentRaffle)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.Response{Body: &echo.Map{"data": err.Error()}})
 	}

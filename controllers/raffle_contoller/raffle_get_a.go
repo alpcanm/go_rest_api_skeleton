@@ -35,5 +35,6 @@ func GetARAffleFromRaffles(c echo.Context) error {
 		}
 
 	}
+
 	return c.JSON(http.StatusOK, models.Response{Body: &echo.Map{"data": raffle}})
 }

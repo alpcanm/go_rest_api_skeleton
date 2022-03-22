@@ -32,7 +32,7 @@ func RaffleAddToListSubscribe(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, models.Response{Message: err.Error()})
 	}
 	// subscriber a yeni ıd veriliyor
-	subscriberModel.SubscribeId = primitive.NewObjectID()
+	subscriberModel.SubscribeModelId = primitive.NewObjectID()
 
 	{ // bu scope subscriber ı raffle listesi içerisine atıyor.
 
@@ -48,7 +48,7 @@ func RaffleAddToListSubscribe(c echo.Context) error {
 		miniRaffle := models.MiniRaffleModel{
 			MiniRaffleModelId: primitive.NewObjectID(),
 			RaffleId:          raffleId,
-			SubscribeId:       subscriberModel.SubscribeId,
+			SubscribeId:       subscriberModel.SubscribeModelId,
 			SubscriberName:    subscriberModel.RaffleNickName,
 			SubscribeDate:     subscriberModel.SubscribeDate,
 		}
