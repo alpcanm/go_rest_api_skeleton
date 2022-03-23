@@ -10,7 +10,7 @@ func RaffleRoutes(e *echo.Echo) {
 	e.POST("/raffle-recent", rafcont.SetNewRecentRaffle)
 	e.PATCH("/raffle-recent", rafcont.RaffleRecentSetExpired)
 	e.GET("/raffle-recent", rafcont.GetRecentRaffle)
-
+	e.GET("/raffle-get-winners", rafcont.GetAWithWinners)
 	e.GET("/raffle", rafcont.GetARAffleFromRaffles)
 	e.POST("/raffles", rafcont.InsertARaffle)
 	e.GET("/raffles", rafcont.GetAllRaffles)

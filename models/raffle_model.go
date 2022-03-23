@@ -20,6 +20,7 @@ type MiniRaffleModel struct {
 	SubscriberName    string             `json:"subscriber_name,omitempty" validate:"required"`
 	SubscribeDate     int64              `json:"subscribe_date,omitempty" validate:"required"`
 }
+
 type RecentRaffleModel struct { //RaffleModel ile Id sütunları farklı
 	RaffleId  primitive.ObjectID `bson:"raffle_id" json:"raffle_id,omitempty"`
 	Title     string             `json:"title,omitempty" validate:"required"`
