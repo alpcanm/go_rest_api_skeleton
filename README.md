@@ -1,2 +1,2 @@
-# go_rest_api_skeleton
+# pandorora_rest_api
  
