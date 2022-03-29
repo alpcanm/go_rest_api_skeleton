@@ -16,7 +16,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var collection *mongo.Collection = config.GetCollection(config.DB, "users")
+var userCollection *mongo.Collection = config.GetCollection(config.DB, "users")
 var validate = validator.New()
 
 func InsertAUser(c echo.Context) error {
@@ -43,7 +43,7 @@ func InsertAUser(c echo.Context) error {
 	user.SubscribedRaffles = []models.MiniRaffleModel{}
 	user.CreatedAt = time.Now().UnixNano() / int64(time.Millisecond)
 	//veritabanına ekler.
-	result, err := collection.InsertOne(ctx, user)
+	result, err := userCollection.InsertOne(ctx, user)
 	if err != nil {
 		fmt.Println(err.Error())
 
@@ -63,7 +63,7 @@ func SelectAUser(c echo.Context) error {
 	// doğrulanan tokenın içerisindeki uid parametresini alır string e dönüştürür
 	uid := fmt.Sprintf("%v", c.Get("user").(*jwt.Token).Claims.(jwt.MapClaims)["uid"])
 	// filtreye göre istenilen veriyi getirir ve result değişkenine atar.
-	err := collection.FindOne(ctx, bson.D{{Key: "uid", Value: uid}}).Decode(&result)
+	err := userCollection.FindOne(ctx, bson.D{{Key: "uid", Value: uid}}).Decode(&result)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return c.JSON(http.StatusBadRequest, models.Response{Body: &echo.Map{"error": err.Error()}})

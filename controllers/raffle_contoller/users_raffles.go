@@ -13,6 +13,7 @@ import (
 )
 
 func GetUsersRaffles(greaterThan int, wantedRaffles []primitive.ObjectID) []models.RaffleModel {
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var results []models.RaffleModel
@@ -45,6 +46,7 @@ func getFiltereds(gtVal int, wantedRaffles []primitive.ObjectID) bson.D {
 	greaterThan := primitive.E{Key: date, Value: greaterThanValue}
 
 	var equalList []bson.D
+
 	for _, value := range wantedRaffles {
 		equalList = append(equalList, bson.D{{Key: "_id", Value: bson.D{{Key: eq, Value: value}}}})
 	}

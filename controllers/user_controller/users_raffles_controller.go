@@ -15,6 +15,7 @@ import (
 )
 
 func SelectUsersRaffles(c echo.Context) error {
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var result models.UserModel
@@ -25,23 +26,26 @@ func SelectUsersRaffles(c echo.Context) error {
 	if errInt != nil {
 		panic(errInt)
 	}
-	// filtreye göre istenilen veriyi getirir ve result değişkenine atar.
-	err := collection.FindOne(ctx, bson.D{{Key: "uid", Value: uid}}).Decode(&result)
+
+	err := userCollection.FindOne(ctx, bson.D{{Key: "uid", Value: uid}}).Decode(&result)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-
 			return c.JSON(http.StatusBadRequest, models.Response{Body: &echo.Map{"error": err.Error()}})
 		}
 		panic(err)
 	}
 
 	var raffleIdList []primitive.ObjectID
+	// kullanıcının kayıt olduğu raffleları listeye atar.
 	for _, value := range result.SubscribedRaffles {
 		raffleIdList = append(raffleIdList, value.RaffleId)
 	}
-
+	if len(raffleIdList) == 0 {
+		return c.JSON(http.StatusNoContent, models.Response{Body: &echo.Map{"data": "There is no any raffle"}})
+	}
 	var usersRaffelList models.UsersRaffleList
-
+	// bunun boşlupunu kontrol et
 	usersRaffelList.RaffleList = rafcont.GetUsersRaffles(gt, raffleIdList)
+
 	return c.JSON(http.StatusOK, models.Response{Body: &echo.Map{"data": usersRaffelList}})
 }
