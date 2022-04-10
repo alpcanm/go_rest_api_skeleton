@@ -15,6 +15,7 @@ import (
 )
 
 func GetSomeSubscribersFromRecentRaffle(c echo.Context) error {
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	recentRaffle := getRecentRaffle()
@@ -22,6 +23,7 @@ func GetSomeSubscribersFromRecentRaffle(c echo.Context) error {
 		SubscriberList []models.SubscriberModel `bson:"subscriber_list" json:"subscriber_list"`
 	}
 	winnersChoose := checkWinnersChooss(c.QueryParam("winnersChoose"))
+
 	generateNumber := checkNumber(winnersChoose, c)
 	err := rafflesWithSubscriberCollection.FindOne(ctx, bson.M{"_id": recentRaffle.RaffleId}).Decode(&resultRaffle)
 
