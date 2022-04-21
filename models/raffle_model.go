@@ -16,9 +16,9 @@ type RaffleModel struct {
 type MiniRaffleModel struct {
 	MiniRaffleModelId primitive.ObjectID `bson:"_id"`
 	RaffleId          primitive.ObjectID `bson:"raffle_id" json:"raffle_id,omitempty"`
-	SubscribeId       primitive.ObjectID `bson:"subscribe_id"`
-	SubscriberName    string             `json:"subscriber_name,omitempty" validate:"required"`
-	SubscribeDate     int64              `json:"subscribe_date,omitempty" validate:"required"`
+	SubscribeId       primitive.ObjectID `bson:"subscribe_id"  json:"subscribe_id,omitempty"`
+	RaffleNickName    string             `bson:"raffle_nick_name" json:"raffle_nick_name,omitempty" validate:"required"`
+	SubscribeDate     int64              `bson:"subscribe_date" json:"subscribe_date,omitempty" validate:"required"`
 }
 
 type RecentRaffleModel struct { //RaffleModel ile Id sütunları farklı

@@ -11,6 +11,6 @@ func UserRoute(e *echo.Echo) {
 
 	e.POST("/users", usercont.InsertAUser)
 	e.GET("/users", usercont.SelectAUser, midlewares.JwtSign())
-	e.GET("/users/:uid", usercont.SelectUsersRaffles)
+	e.GET("/users/:uid/subscribed-raffles", usercont.SelectUsersRaffles)
 	e.POST("/users/:uid", usercont.UserUpdateController) // Burayı jwt ile koru.
 }

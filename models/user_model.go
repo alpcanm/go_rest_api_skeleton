@@ -14,5 +14,5 @@ type UserModel struct {
 }
 
 type UsersRaffleList struct {
-	RaffleList []RaffleModel `json:"raffle_list,omitempty"`
+	RaffleList []RaffleModel `json:"subscribed_raffles,omitempty"`
 }
