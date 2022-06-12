@@ -7,6 +7,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+//! Güvenlik problemi yaratacak dataları .env dosyasına atıp gitignore a ekliyoruz ve github a yüklemek zorunda kalmıyoruz.
+//! .env dosyası içerisindeki verileri çektiğimiz fonksiyonlar.
 func mongoURI() string {
 	err := godotenv.Load()
 	if err != nil {

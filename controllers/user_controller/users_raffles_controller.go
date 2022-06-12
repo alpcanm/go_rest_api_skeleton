@@ -14,12 +14,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+//! Kullanıcının kayıtlı olduğu çekilişleri getiren istek.
 func SelectUsersRaffles(c echo.Context) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var result models.UserModel
-	// doğrulanan tokenın içerisindeki uid parametresini alır string e dönüştürür
+	//! doğrulanan tokenın içerisindeki uid parametresini alır string e dönüştürür
 	uid := c.Param("uid")
 
 	gt, errInt := strconv.Atoi(c.QueryParam("gt"))
@@ -36,7 +37,7 @@ func SelectUsersRaffles(c echo.Context) error {
 	}
 
 	var raffleIdList []primitive.ObjectID
-	// kullanıcının kayıt olduğu raffleları listeye atar.
+	//! kullanıcının kayıt olduğu raffleları listeye atar.
 	for _, value := range result.SubscribedRaffles {
 		raffleIdList = append(raffleIdList, value.RaffleId)
 	}
