@@ -25,7 +25,7 @@ func InsertARaffle(c echo.Context) error {
 	var raffle models.RaffleModel
 
 	if err := c.Bind(&raffle); err != nil {
-		//bir hata varsa döner
+		//!bir hata varsa döner
 		fmt.Println(err.Error())
 		return c.JSON(http.StatusBadRequest, models.Response{Message: err.Error()})
 	}
@@ -36,6 +36,9 @@ func InsertARaffle(c echo.Context) error {
 	}
 	raffle.RaffleId = primitive.NewObjectID()
 	raffle.IsExpired = false
+	//! oluşturlan raffle ı hem raffleCollection hemde rafflesWithSubscriberCollection a atar.
+	//! İki collections a atmasının sebebi raffleCollectionın şişmemesi için normal mobil appte raffleCollections çekilir.
+	//! Web appde rafflesWitthSubscriberCollection çekilir.
 	result, err := rafflesCollection.InsertOne(ctx, raffle)
 	_, err2 := rafflesWithSubscriberCollection.InsertOne(ctx, raffle)
 
@@ -43,7 +46,7 @@ func InsertARaffle(c echo.Context) error {
 		fmt.Println(err.Error())
 		return c.JSON(http.StatusBadRequest, models.Response{Message: err.Error()})
 	}
-	//sonuç döner
+	//!sonuç döner
 	return c.JSON(http.StatusCreated, models.Response{Body: &echo.Map{"data": result}})
 
 }

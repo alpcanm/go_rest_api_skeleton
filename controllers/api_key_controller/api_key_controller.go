@@ -1,7 +1,6 @@
 package apicont
 
 import (
-	"fmt"
 	"go_rest_api_skeleton/config"
 	"go_rest_api_skeleton/models"
 	"net/http"
@@ -10,6 +9,6 @@ import (
 )
 
 func GetApiKey(c echo.Context) error {
-	fmt.Println("Api key istek")
+	//! firebase api key ini getiren cevap
 	return c.JSON(http.StatusOK, models.Response{Body: &echo.Map{"data": config.ApiKey()}})
 }

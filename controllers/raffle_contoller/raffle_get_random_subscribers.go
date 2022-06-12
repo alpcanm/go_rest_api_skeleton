@@ -19,12 +19,14 @@ func GetSomeSubscribersFromRecentRaffle(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	recentRaffle := getRecentRaffle()
-	var resultRaffle struct { //sadece içerisindeki listeyi çeker
+	var resultRaffle struct { //! sadece recent raffle içerisindeki listeyi çeker diğer datalara ihtiyaç olmadığığı için
 		SubscriberList []models.SubscriberModel `bson:"subscriber_list" json:"subscriber_list"`
 	}
+	//! kazananları mı yoksa çekiliş ekranında rastgele gelenleri mi gösterileceğinin kontrolü. Eğer kazananları istiyorsa bu değer true gelir.
 	winnersChoose := checkWinnersChooss(c.QueryParam("winnersChoose"))
-
+	//! kaç kişi istendiğini kontrol eder. Eğer kazananları çekiyorsak bu değer 3 gelir.
 	generateNumber := checkNumber(winnersChoose, c)
+	//! sorgu çalışır.
 	err := rafflesWithSubscriberCollection.FindOne(ctx, bson.M{"_id": recentRaffle.RaffleId}).Decode(&resultRaffle)
 
 	if err != nil {
@@ -33,16 +35,22 @@ func GetSomeSubscribersFromRecentRaffle(c echo.Context) error {
 		}
 
 	}
+	// ! gelen datanını SubscriberList fieldindaki veriler başka bir değişkene atanır.
 	subscriberList := resultRaffle.SubscriberList
-
+	//! rasrgele bir şekilde subscriber list içindekilerin sırasını değiştiren fonksiyon.
+	//! Örn içine 5 yazıldı 5 i 4,1,5,3,2 diye bir liste yapıp döndürüyor.
 	indexesOfChoices := randomGenerator(len(subscriberList), generateNumber)
-
+	//! indexesOfChoices listesinin içine sırayla subscriberları attığımız fonksiyon.
 	choosens := chooseSomeSubscribers(indexesOfChoices, subscriberList)
+	//! eğer kazananları seçiyorsa  WithIndexSubscriberModel içerisine kazananları atayan fonksiyon.
+	//! Burada indexli olarak atmamızın sebebi aynı verileri veritabanına da kaydettiği için. yoksa rastgele kayıt yapıp
+	//! birinci ikinci üçüncün yeri karılabilir.
 	winners := setWinnersIndexForRaffleScreen(choosens)
 	if winnersChoose {
-		//Eğer winnerChoose true ise kazananları raffleCollections içerisindeki o raffle içerisine winnerModel olarak ekleyecek.
-		// eğer ki winner çekiliyorsa direkt gönderilir.
-		setWinnersToRaffleCollections(choosens, recentRaffle.RaffleId)
+		//!Eğer winnerChoose true ise kazananları raffleCollections içerisindeki o raffle içerisine winnerModel olarak ekleyecek.
+		//! eğer ki winner çekiliyorsa direkt gönderilir.
+		setWinnersToRaffleCollections(choosens, recentRaffle.RaffleId) //! kazananları db ye kayıt eden fonksiyon.
+
 		return c.JSON(http.StatusOK, models.Response{Body: &echo.Map{"data": winners}})
 	}
 	indexedSomeSubscribers := setSomeSubscriberIndexForRaffleScreen(choosens)
@@ -50,7 +58,7 @@ func GetSomeSubscribersFromRecentRaffle(c echo.Context) error {
 
 }
 func checkNumber(winnerChoose bool, c echo.Context) int {
-	// kaç adet subscriber çekileceğini kontrol eder.
+	//! kaç adet subscriber çekileceğini kontrol eder.
 	if winnerChoose {
 		return 3
 	}
@@ -61,14 +69,14 @@ func checkNumber(winnerChoose bool, c echo.Context) int {
 	return yNumberValue
 }
 func checkWinnersChooss(param string) bool {
-	// winnersChoose parametresinin true false değerini kontrol eder.
+	//! winnersChoose parametresinin true false değerini kontrol eder.
 	if param == "true" {
 		return true
 	}
 	return false
 }
 func chooseSomeSubscribers(indexList []int, subscriberList []models.SubscriberModel) []models.SubscriberModel {
-	// SubscriberList verisiyle gelen listedeki indexListteki değerlere göre seçimleri yapan fonksiyon
+	//! SubscriberList verisiyle gelen listedeki indexListteki değerlere göre seçimleri yapan fonksiyon
 	var resultList []models.SubscriberModel
 	for _, num := range indexList {
 		resultList = append(resultList, subscriberList[num])
@@ -77,7 +85,7 @@ func chooseSomeSubscribers(indexList []int, subscriberList []models.SubscriberMo
 }
 
 func randomGenerator(x int, y int) []int {
-	// 0 ile x arasında y adet birbirinden farklı sayıları liste içinde döndüren fonksisyon
+	//! 0 ile x arasında y adet birbirinden farklı sayıları liste içinde döndüren fonksisyon
 	rand.Seed(time.Now().UnixNano())
 	var generatedNumbers []int
 
@@ -103,7 +111,7 @@ func randomGenerator(x int, y int) []int {
 }
 
 func setWinnersToRaffleCollections(winners []models.SubscriberModel, objectId primitive.ObjectID) bool {
-	// kazananları rafffle koleksiyonuna ekler
+	//! kazananları raffle koleksiyonuna ekler
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var winnerModel models.WinnersModel
@@ -123,7 +131,7 @@ func setWinnersToRaffleCollections(winners []models.SubscriberModel, objectId pr
 }
 
 func setSomeSubscriberIndexForRaffleScreen(choosens []models.SubscriberModel) []models.WithIndexSubscriberModel {
-	//raffleScreendeki rastgele indexleri atar. seyircinin önüne çıkacak olan isimlerin indexlerini belirler.
+	//!raffleScreendeki rastgele indexleri atar. seyircinin önüne çıkacak olan isimlerin indexlerini belirler.
 	var result []models.WithIndexSubscriberModel
 	indexList := randomGenerator(25, len(choosens))
 	for i, num := range indexList {
@@ -139,7 +147,7 @@ func setSomeSubscriberIndexForRaffleScreen(choosens []models.SubscriberModel) []
 	return result
 }
 func setWinnersIndexForRaffleScreen(choosens []models.SubscriberModel) []models.WithIndexSubscriberModel {
-	//kazananların indexlerini yazar
+	//!kazananların indexlerini yazar
 	var result []models.WithIndexSubscriberModel
 
 	for i, _ := range choosens {

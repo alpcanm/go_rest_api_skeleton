@@ -14,7 +14,7 @@ import (
 func connectDB() *mongo.Client {
 
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
-
+	//! Veri tabanına bağlanır
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI()))
 
 	if err != nil {

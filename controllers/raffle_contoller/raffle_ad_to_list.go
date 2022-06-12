@@ -16,25 +16,25 @@ func RaffleAddToListSubscribe(c echo.Context) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	// gelen istekten rfid parametresi alınıyor
+	//! gelen istekten rfid parametresi alınıyor
 	raffleId, _ := primitive.ObjectIDFromHex(c.QueryParam("rfid"))
-	//subscriberModel tanımlanır
+	//!subscriberModel tanımlanır
 	var subscriberModel models.SubscriberModel
-	//gelen veriler subscriber modele bind edilir.
+	//!gelen veriler subscriber modele bind edilir.
 	if err := c.Bind(&subscriberModel); err != nil {
-		//bir hata varsa döner
+		//!bir hata varsa döner
 		fmt.Println(err.Error())
 		return c.JSON(http.StatusBadRequest, models.Response{Message: err.Error()})
 	}
-	// gelen veriler eksikliği kontrol ediliyor.
+	//! gelen veriler eksikliği kontrol ediliyor.
 	if err := validate.Struct(subscriberModel); err != nil {
 		fmt.Println(err.Error())
 		return c.JSON(http.StatusBadRequest, models.Response{Message: err.Error()})
 	}
-	// subscriber a yeni ıd veriliyor
+	//! subscriber a yeni ıd veriliyor
 	subscriberModel.SubscribeModelId = primitive.NewObjectID()
 
-	{ // bu scope subscriber ı raffle listesi içerisine atıyor.
+	{ //! bu scope subscriber ı raffle listesi içerisine atıyor.
 
 		filter := bson.D{{Key: "_id", Value: raffleId}}
 		update := bson.D{{Key: "$push", Value: bson.D{{Key: "subscriber_list", Value: subscriberModel}}}}
@@ -44,7 +44,7 @@ func RaffleAddToListSubscribe(c echo.Context) error {
 		}
 	}
 
-	{ // bu scope mini raffle ı user ın listesi içerisine atıyor
+	{ //! bu scope mini raffle ı user ın listesi içerisine atıyor
 		miniRaffle := models.MiniRaffleModel{
 			MiniRaffleModelId: primitive.NewObjectID(),
 			RaffleId:          raffleId,

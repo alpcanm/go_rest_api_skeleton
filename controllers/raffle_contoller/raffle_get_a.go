@@ -16,14 +16,16 @@ func GetARAffleFromRaffles(c echo.Context) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	//! gelen datayı dönüştüreceğimiz modeli oluşturuyoruz.
 	var raffle models.RaffleModel
+	//! istek içindeki id yi alıp mongodb datasına dönüştürüyoruz
 	objectId, err1 := primitive.ObjectIDFromHex(c.QueryParam("raffleId"))
 	if err1 != nil {
 		if err1 == mongo.ErrNoDocuments {
 			return c.JSON(http.StatusBadRequest, models.Response{Message: err1.Error()})
 		}
 	}
-
+	//! filtreli olarak sorguyu çalıştırıyoruz ve gelen veriyi raffle değişkenine decode ediyoruz.
 	err := rafflesCollection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&raffle)
 
 	if err != nil {
@@ -33,7 +35,7 @@ func GetARAffleFromRaffles(c echo.Context) error {
 		}
 
 	}
-
+	//! bütün işlemler problemsiz hallolursa status 200 cevap dönüyor.
 	return c.JSON(http.StatusOK, models.Response{Body: &echo.Map{"data": raffle}})
 }
 
